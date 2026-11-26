@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffffff">
+<title>SHUANGNA — Some moments are worth keeping.</title>
+<meta name="description" content="A personal collection of moments, places and people.">
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #fff;
+  color: #222;
+  font-family: Arial, "Helvetica Neue", sans-serif;
+}
+header {
+  max-width: 1440px;
+  margin: auto;
+  padding: 48px 5% 30px;
+}
+.logo {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 3px;
+}
+.tagline {
+  margin-top: 12px;
+  color: #888;
+  font-size: 14px;
+  letter-spacing: .5px;
+}
+main {
+  max-width: 1440px;
+  margin: auto;
+  padding: 15px 5% 70px;
+}
+.gallery {
+  columns: 3;
+  column-gap: 18px;
+}
+.photo {
+  display: block;
+  width: 100%;
+  margin: 0 0 18px;
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: zoom-in;
+  break-inside: avoid;
+}
+.photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform .35s ease;
+}
+.photo:hover img { transform: scale(1.025); }
+.empty {
+  padding: 100px 20px;
+  text-align: center;
+  color: #999;
+}
+.empty strong {
+  display: block;
+  margin-bottom: 12px;
+  color: #555;
+  font-size: 18px;
+  font-weight: 400;
+}
+footer {
+  padding: 25px 15px 35px;
+  text-align: center;
+  color: #aaa;
+  font-size: 12px;
+  letter-spacing: .5px;
+}
+.viewer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0,0,0,.94);
+  align-items: center;
+  justify-content: center;
+  padding: 55px 55px;
+}
+.viewer.show { display: flex; }
+.viewer img {
+  max-width: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+}
+.close, .prev, .next {
+  position: absolute;
+  border: 0;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 34px;
+}
+.close { top: 15px; right: 25px; }
+.prev { left: 15px; }
+.next { right: 15px; }
+@media (max-width: 800px) {
+  .gallery { columns: 2; column-gap: 12px; }
+  .photo { margin-bottom: 12px; }
+  header { padding: 35px 5% 25px; }
+  .logo { font-size: 26px; }
+}
+@media (max-width: 420px) {
+  .gallery { columns: 2; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">SHUANGNA</div>
+  <div class="tagline">Some moments are worth keeping.</div>
+</header>
+
+<main>
+  <div class="gallery" id="gallery"></div>
+  <div class="empty" id="empty">
+    <strong>Every moment has a story.</strong>
+    Your memories will appear here.
+  </div>
+</main>
+
+<footer>
+  A personal collection of memories.
+</footer>
+
+<div class="viewer" id="viewer">
+  <button class="close" id="close" aria-label="Close">×</button>
+  <button class="prev" id="prev" aria-label="Previous">‹</button>
+  <img id="viewerImage" alt="Selected memory">
+  <button class="next" id="next" aria-label="Next">›</button>
+</div>
+
+<script>
+// 上传照片后，在这里填写照片路径
+const photos = [
+  // "images/photo-01.jpg",
+  // "images/photo-02.jpg",
+  // "images/photo-03.jpg",
+];
+
+const gallery = document.getElementById("gallery");
+const empty = document.getElementById("empty");
+const viewer = document.getElementById("viewer");
+const viewerImage = document.getElementById("viewerImage");
+let current = 0;
+
+photos.forEach((src, index) => {
+  const item = document.createElement("div");
+  item.className = "photo";
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = "SHUANGNA memory " + (index + 1);
+  img.loading = "lazy";
+  img.addEventListener("click", () => openViewer(index));
+  item.appendChild(img);
+  gallery.appendChild(item);
+});
+
+empty.style.display = photos.length ? "none" : "block";
+
+function openViewer(index) {
+  current = index;
+  viewerImage.src = photos[current];
+  viewer.classList.add("show");
+}
+function changePhoto(step) {
+  if (!photos.length) return;
+  current = (current + step + photos.length) % photos.length;
+  viewerImage.src = photos[current];
+}
+document.getElementById("close").onclick = () =>
+  viewer.classList.remove("show");
+document.getElementById("prev").onclick = () => changePhoto(-1);
+document.getElementById("next").onclick = () => changePhoto(1);
+viewer.addEventListener("click", e => {
+  if (e.target === viewer) viewer.classList.remove("show");
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") viewer.classList.remove("show");
+  if (e.key === "ArrowLeft") changePhoto(-1);
+  if (e.key === "ArrowRight") changePhoto(1);
+});
+</script>
+</body>
+</html>
